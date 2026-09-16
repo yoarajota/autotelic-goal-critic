@@ -1,0 +1,110 @@
+id: C-006
+slug: autotelic-goal-critic
+title: "Autotelic goal generation: generator + independent Goldilocks critic"
+archetype: implementation
+phase: P1
+status: active
+
+# The stack is declared explicitly so gate commands and verification paths are concrete
+# rather than assumed. Any language is valid.
+stack:
+  language: Python
+  build_tool: make
+  test_runner: pytest
+  quality_runner: "make quality"   # must match quality-gates.yaml -> iso5055.runner
+  notes: >
+    Python 3.12, no runtime dependency beyond the standard library: the learner is a tabular
+    goal-conditioned value function in a discrete gridworld, so numpy is not required and is not
+    declared. Quality tooling (ruff, mypy, radon, bandit, vulture, pylint, pytest) and
+    gitleaks are build-and-check-time only.
+
+summary: >
+  A goal generator proposes candidate goals and an independent critic rates each one by how much
+  learning progress it is likely to produce, rejecting goals that are already mastered and goals
+  that are out of reach, so that a goal-conditioned learner practises goals it can still improve
+  on. The concept is whether that choice buys anything over sampling goals uniformly, at the same
+  number of environment interactions.
+
+question: "Does generator + Goldilocks critic produce measurably more learning progress than uniform random goal sampling at matched interaction budget?"
+
+data_driven: true
+
+domain:
+  - reinforcement-learning
+  - intrinsic-motivation
+  - goal-conditioned-rl
+  - curriculum-learning
+
+# P0 selection screen. Every field must survive the question "is this a tautology?".
+# Re-verified at bootstrap against the primary sources; the two fields that changed carry a
+# "revised" note recording what was wrong.
+screen:
+  problem_class: >
+    Goal-conditioned learning in a goal space too large for a designer to enumerate and stage by
+    hand, where the space is also a mixture: some goals are already reachable, some are trivially
+    satisfied at the start, and some cannot be reached at all. In that class the learner has to
+    decide for itself what to practise next, because a fixed task list must be written by someone
+    who already knows which goals are learnable, which is the thing being discovered.
+  incumbent: >
+    Uniform random goal sampling with hindsight relabelling (HER, arXiv:1707.01495v3): a goal is
+    drawn uniformly from the goal space each episode, and states actually reached are relabelled as
+    goals for that episode. Revised from "uniform random sampling, saturates, needs a human task
+    list": hindsight relabelling is itself an automatic curriculum, so the incumbent does not need
+    a human task list and does not simply saturate. Its honest shortfall is that the goal
+    distribution never adapts, so budget keeps going to goals that are mastered and to goals that
+    are unreachable, and the reported remedy in the literature is the selection mechanism under
+    test. The incumbent is strong where the goal space has no distractors, which the experiment
+    therefore has to include.
+  falsifier: >
+    In the distractor-rich condition, at a matched total environment-transition budget over at
+    least five pinned seeds, generator + critic goal selection shows a median advantage of zero or
+    less in held-out success rate over reachable goals against uniform random goal sampling, with
+    any evaluation rollouts the critic performs deducted from its own share of the budget. An
+    advantage that is positive but below the pre-registered 20-percentage-point margin is recorded
+    as partially supported rather than as a win. The falsifier is about the selection mechanism,
+    not about whether autonomous goal-setting is interesting in general.
+  complexity_justification: >
+    Two components, and no more: a proposer and a rater. The rater must not be the learner's own
+    value function, because a rating derived from the estimates being improved can rate a goal high
+    for the same reason it mis-estimates it, and the selection signal then confirms itself. The
+    literature's agents do keep them apart by construction, estimating competence from recorded
+    achievement outcomes rather than from the policy being trained (CURIOUS, arXiv:1810.06284).
+    "Deluded achiever" is this repository's working name for the degenerate case; it is not a term
+    from the sources. Anything simpler than two parts removes the separation the justification
+    rests on, and anything larger (ensembles, adversarial generators, populations) is not required
+    by this question and would need its own scenario before it was added.
+
+baseline:
+  name: "Uniform random goal sampling with hindsight relabelling (HER)"
+  version: "arXiv:1707.01495v3 (23 Feb 2018)"
+  url: "https://arxiv.org/abs/1707.01495"
+  why: >
+    It is what goal-conditioned practice actually runs — in UVFA, HER and UNICORN the next goal is
+    selected at random — and it is the comparison the intrinsic-motivation literature itself makes,
+    against a random-selection arm with everything else held equal (IMGEP's Random Model Babbling,
+    CURIOUS's M-UVFA). Sampling is uniform over the goal space, which is precisely the policy the
+    critic replaces, so the two arms differ in one component and share the learner, the relabelling
+    and the exploration floor. It is not a strawman: its relabelling is a working automatic
+    curriculum, and it is reported to be competitive wherever the goal space has no distractors.
+
+hypotheses:
+  - id: H-001
+    statement: >
+      Under a deterministic discrete gridworld whose goal space mixes reachable, trivially
+      satisfied and unreachable goals, with a tabular goal-conditioned learner and hindsight
+      relabelling shared by both arms, a pinned seed set and a matched total environment-transition
+      budget, generator + independent Goldilocks critic goal selection reaches a held-out success
+      rate over reachable goals at least 20 percentage points higher than uniform random goal
+      sampling at the same budget; at the cost of the critic's competence estimation, which needs
+      recorded outcome samples before any goal can be rated, adds a minimum-sample threshold below
+      which a goal is unrated rather than rejected, and adds per-candidate scoring compute to every
+      selection step.
+    verdict: untested
+    evidence_refs: []
+    revisions: []
+
+# Set once the remote exists (bootstrap step 3). Required only at G6, so it stays
+# null until then rather than blocking every earlier gate as a placeholder.
+repo_url:
+created: "2026-09-16"
+updated: "2026-09-16"

@@ -1,0 +1,105 @@
+# ISO/IEC 25010 utility tree + ISO/IEC 5055 gates + diffusion assessment.
+
+# At most 3. A concept that drives all nine drives none.
+driving_characteristics:
+  - performance-efficiency
+  - reliability
+  - maintainability
+
+# The three scenarios are written now, before the code exists, so the measurement cannot be
+# chosen to suit the result. S-002 exercises the failure mode that most plausibly kills a run
+# (a selection step with no acceptable candidate), not a hardware fault.
+utility_tree:
+  - id: S-001
+    characteristic: performance-efficiency
+    sub_attribute: time-behaviour
+    scenario: >
+      When a full comparison run (both arms, every pinned seed, the declared matched budget) is
+      executed on a single host, the goal-selection step consumes at most 10% of the run's
+      wall-clock time, measured as the selection time divided by total run time, reported by the
+      run itself and recorded per seed.
+    priority: high
+    difficulty: medium
+    verification: bench/run_matrix.py
+    status: unverified
+    evidence_refs: []
+
+  - id: S-002
+    characteristic: reliability
+    sub_attribute: fault-tolerance
+    scenario: >
+      When every candidate goal has been rejected as trivial or unreachable and the critic's
+      candidate pool is empty, the run continues by generating fresh candidates instead of
+      terminating, measured as the number of aborted runs across the seed set, which must be zero
+      while the run supplies the held-out evaluation result it promised.
+    priority: high
+    difficulty: medium
+    verification: tests/test_goal_selection.py
+    status: unverified
+    evidence_refs: []
+
+  - id: S-003
+    characteristic: maintainability
+    sub_attribute: modifiability
+    scenario: >
+      When the goal-selection policy is replaced — the one component that differs between the two
+      arms — a competent engineer applies the change by touching at most two files (the policy
+      module plus its configuration value) and reruns the comparison unchanged, measured as files
+      changed in the reference patch kept with the experiment.
+    priority: medium
+    difficulty: low
+    verification: docs/04-tradeoffs.md
+    status: unverified
+    evidence_refs: []
+
+iso5055:
+  # One command that runs every check below and exits non-zero on violation.
+  runner: "make quality"
+  last_run:
+    date: "2026-09-16"
+    exit_code: -1
+    commit: ""
+  thresholds:
+    cyclomatic_complexity_max: 15
+    function_length_max: 60
+    file_length_max: 500
+    duplicated_lines_pct_max: 3
+    # Enforced as maximum control-flow nesting depth, not call-graph depth: the latter needs a
+    # resolver, and nesting is what makes a function unreadable. The substitution is recorded in
+    # tools/complexity_gate.py, next to the measurement, and a test fails if the two numbers drift.
+    max_call_depth: 8
+  # The column that matters is `tool`: the standard names what to detect, this maps it to the
+  # check that detects it in this stack. `radon cc` reports, `tools/complexity_gate.py` enforces —
+  # the plain radon invocation exits 0 even when it prints a rank-C block.
+  weaknesses:
+    - {cwe: 798,  name: "Hard-coded credentials",              tool: "gitleaks detect"}
+    - {cwe: 20,   name: "Improper input validation",           tool: "mypy --strict"}
+    - {cwe: 476,  name: "Null pointer dereference",            tool: "mypy --strict"}
+    - {cwe: 772,  name: "Missing release of resource",         tool: "ruff check"}
+    - {cwe: 391,  name: "Unchecked error condition",           tool: "ruff check"}
+    - {cwe: 400,  name: "Uncontrolled resource consumption",   tool: "pytest tests/test_limits.py"}
+    - {cwe: 1121, name: "Excessive cyclomatic complexity",     tool: "radon cc"}
+    - {cwe: 1041, name: "Unstructured duplicated code",        tool: "pylint --disable=all --enable=duplicate-code"}
+    - {cwe: 561,  name: "Dead code",                           tool: "vulture"}
+    - {cwe: 1047, name: "Circular dependencies",               tool: "lint-imports"}
+  exemptions: []
+  # - id: X-001
+  #   rule: cyclomatic_complexity_max
+  #   scope: src/module.py:function
+  #   reason: "At least 30 characters explaining why decomposition would make this worse."
+  #   expires: "2026-12-31"
+
+# Every structural complexity traces to the scenario that requires it. Empty because nothing
+# structural has been added yet: there is no runtime dependency beyond the standard library, and
+# the linters, type checker and test runner are toolchain, not architecture.
+complexity_ledger: []
+
+# Completed at P6. `suitable_for` is derived from the mapping table, never chosen.
+# diffusion:
+#   relative_advantage: {score: partial, justification: "..."}
+#   compatibility:      {score: strong,  justification: "..."}
+#   simplicity:         {score: weak,    justification: "..."}
+#   trialability:       {score: strong,  justification: "..."}
+#   observability:      {score: partial, justification: "..."}
+#   suitable_for: early-adopters
+#   chasm_blockers: [simplicity]

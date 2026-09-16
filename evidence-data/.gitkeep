@@ -1,0 +1,3 @@
+# Raw measurement data lives here (FD-011).
+# Every Kind: benchmark entry in docs/05-evidence.md references one file
+# in this directory with its sha256 checksum.
