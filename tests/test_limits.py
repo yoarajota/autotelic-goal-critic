@@ -21,7 +21,18 @@ GATE_SCRIPT = (ROOT / "tools" / "complexity_gate.py").read_text(encoding="utf-8"
 
 def test_preregistered_margin_is_intact() -> None:
     assert "20 percentage points" in CONCEPT
-    assert "verdict: untested" in CONCEPT
+
+
+def test_verdict_is_one_of_the_allowed_values_and_carries_evidence() -> None:
+    """The verdict may be decided, but never silently or without an evidence entry behind it."""
+    match = re.search(r"^    verdict: ([\w-]+)$", CONCEPT, re.MULTILINE)
+    assert match, "the hypothesis has no verdict line"
+    verdict = match.group(1)
+    assert verdict in {"untested", "supported", "partially-supported", "falsified"}
+    if verdict != "untested":
+        assert "evidence_refs: [E-" in CONCEPT, (
+            f"verdict {verdict!r} is recorded without an evidence entry supporting it"
+        )
 
 
 def test_seed_count_is_declared_as_a_finite_number() -> None:
