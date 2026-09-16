@@ -42,7 +42,30 @@ until it exists, this repository contains a hypothesis and the source survey tha
 measurement of the concept. See [E-001](docs/05-evidence.md#e-001) for what *is* established.
 
 <!-- scorecard:start -->
-<!-- Auto-generated. Do not hand-edit. -->
+
+### Readiness scorecard
+
+_Generated from `.sota/` — do not hand-edit._
+
+| Measure | Value | Meaning |
+| :--- | :--- | :--- |
+| **TRL** | **2** | Technology concept formulated |
+| **SRL**  | **3** | High-risk immature technologies identified and prototyped — seams only |
+| Composite SRL | 0.222 | aggregate over all components (0–1) |
+| Weakest component | core (0.2222) | lowest component-level SRL |
+| Weakest seam | n/a | lowest-scoring integration pair |
+| Suitable for | not assessed | audience for which this result is ready |
+
+| Component | Role | TRL | Component SRL |
+| :--- | :--- | :-: | :-: |
+| `core` | concept | 2 | 0.222 |
+
+| Scenario | Characteristic | Priority | Status |
+| :--- | :--- | :--- | :--- |
+| S-001 | performance-efficiency | high | unverified |
+| S-002 | reliability | high | unverified |
+| S-003 | maintainability | medium | unverified |
+
 <!-- scorecard:end -->
 
 ## Try it
@@ -96,8 +119,10 @@ Full ledger: [docs/05-evidence.md](docs/05-evidence.md).
   narrow; a negative result would be consistent with part of the literature.
 - **The domain is chosen for cost, not for fidelity.** A discrete deterministic gridworld with an
   enumerable goal space is not the problem class that motivated the concept ("too large to
-  enumerate"), and the critic's estimate is cheaper and less noisy there than in the continuous,
-  stochastic environments the sources use. That bias favours the critic arm.
+  enumerate"), and the critic's competence estimate is drawn from a setting without the stochastic
+  reachability the sources report as the trap for difficulty-based selection (E-001). That
+  difference favours the critic arm, which is why a positive result here would not transfer to the
+  continuous, stochastic environments those sources use.
 - **The critic's thresholds are choices, not results.** The minimum-sample count that separates
   "unrated" from "unreachable", the window length, and the triviality ceiling have no reported
   sensitivity analysis (E-001); if the effect exists only in a narrow band of them, the mechanism

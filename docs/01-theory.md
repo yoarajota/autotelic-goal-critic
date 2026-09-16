@@ -9,8 +9,8 @@ work lands in § Open questions.
 ## The mechanism
 
 The claim under test is narrow: **the choice of which goal to practise next buys learning
-progress, and an explicit generator/critic pair makes that choice better than sampling goals
-uniformly.** This section states the mechanism precisely enough to implement, then the
+progress, and an explicit generator/critic pair is what makes that choice**, rather than sampling
+goals uniformly. This section states the mechanism precisely enough to implement, then the
 criterion the critic applies.
 
 **Setting.** A goal-conditioned learner interacts with an environment and receives, for each
@@ -263,8 +263,8 @@ there and only there.
 1. **Does the critic's independence change the outcome, or is an outcome-based estimate alone
    sufficient?** The literature's two-part structures differ in how the rating is produced (bandit,
    GAN discriminator, ensemble disagreement) and this repository implements only one. Whether a
-   single network proposing *and* rating goals is worse is the mechanism's core justification and
-   is not measured here.
+   single network that both proposes and rates goals is sufficient is the mechanism's core
+   justification and is not measured here.
 2. **How sensitive is the mechanism to the Goldilocks band?** No source in the ledger reports a
    sensitivity analysis of the minimum-sample threshold, the window length, or the triviality
    ceiling. If the effect exists only in a narrow band of these, the mechanism is expensive in a way
@@ -443,11 +443,11 @@ this ledger — which is why every URL here was checked against the document it 
   behaviour, from the self-regulation literature on unattainable goals: goal **disengagement**
   capacity (dropping goals that cannot be attained) and goal **re-engagement** capacity (committing
   to new goals) are generalised individual differences measured separately, with different
-  correlates — disengagement is associated with reduced distress and better biological and physical
-  health outcomes among people facing unattainable goals, while re-engagement is associated with
-  positive well-being indicators but rarely predicts distress or health. The transfer of this
-  two-capacity structure to an artificial agent's selection rule is this repository's design
-  analogy, not a finding of the source.
+  correlates — disengagement is associated with reduced distress and with physical and biological
+  health outcomes recorded as improved, while re-engagement is associated with positive well-being
+  indicators but rarely predicts distress or health (E-001). The transfer of this two-capacity
+  structure to an artificial agent's selection rule is this repository's design analogy, not a
+  finding of the source.
 
 ### SRC-011 — Laskin, Yarats, Liu, Lee, Zhan, Lu, Cang, Pinto & Abbeel, *URLB: Unsupervised Reinforcement Learning Benchmark*, arXiv:2110.15191
 
