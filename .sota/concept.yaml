@@ -2,8 +2,8 @@ id: C-006
 slug: autotelic-goal-critic
 title: "Autotelic goal generation: generator + independent Goldilocks critic"
 archetype: implementation
-phase: P2
-status: active
+phase: P6
+status: falsified
 
 # The stack is declared explicitly so gate commands and verification paths are concrete
 # rather than assumed. Any language is valid.
@@ -99,12 +99,27 @@ hypotheses:
       recorded outcome samples before any goal can be rated, adds a minimum-sample threshold below
       which a goal is unrated rather than rejected, and adds per-candidate scoring compute to every
       selection step.
-    verdict: untested
+    verdict: falsified
     evidence_refs: [E-002]
     revisions: []
 
 # Set once the remote exists (bootstrap step 3). Required only at G6, so it stays
 # null until then rather than blocking every earlier gate as a placeholder.
 repo_url:
+notes: >
+  Published as a probe, stopped at proof of concept. H-001's pre-registered falsification
+  condition was met by E-002: over 5 pinned seeds at a matched 60k-transition budget the
+  critic arm's median advantage in held-out success was +0.0 percentage points in the
+  distractor-rich condition and -3.3 points in the all-learnable control, so the hypothesis
+  is falsified in the domain this screen named. The mechanism was demonstrably engaged — it
+  moved 71.0% of episodes onto regions where progress is possible, against 63.9% for uniform
+  sampling — and bought no competence. What was learned instead, and it is the part worth
+  keeping: for a learner that transfers across goals, an episode aimed at an unreachable goal
+  still trains what a reachable far goal needs, so the waste this mechanism exists to remove
+  was not there to remove, and the second component is unpaid in that configuration. Left
+  untested deliberately: whether a learner with bounded cross-goal transfer restores an
+  advantage (recorded as an open question in docs/01-theory.md, not a roadmap). Gates G3, G4
+  and G5 are waived under the probe exit; the readiness level stays at the TRL 3 the evidence
+  supports, and the repo is not deflated further out of disappointment.
 created: "2026-09-16"
 updated: "2026-09-16"

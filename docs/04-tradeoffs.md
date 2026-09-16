@@ -1,93 +1,31 @@
-# Tradeoff analysis — Autotelic goal generation: generator + independent Goldilocks critic
+# Tradeoffs — Autotelic goal generation: generator + independent Goldilocks critic
 
-ATAM-lite, produced at P4.
+## ATAM-lite was not run
 
-## 1. Drivers
+This pass belongs to G4, and G4 is waived for this repository: the concept stopped at a proof of
+concept, published as a probe. The utility tree in [.sota/quality-gates.yaml](../.sota/quality-gates.yaml)
+therefore still holds three scenarios with status `unverified`, and there are no sensitivity points,
+no tradeoff points and no risk register. That absence is a limitation of this repository, not an
+implied clean bill of health, and it is stated in `README.md § Limitations`.
 
-<!-- What this must be good at, and what it is allowed to be bad at. Two or three sentences.
-     Being explicit about the second half is the whole point. -->
+What the architecture analysis would have examined, had it run, is recorded here so the next
+person does not have to reconstruct it from the code:
 
-TODO
+- **The tradeoff the concept actually makes.** The critic buys a reallocation of practice — 71.0% of
+  episodes onto regions where progress is possible, against 63.9% for uniform sampling — and pays
+  for it with three thresholds that must be chosen before it can rate anything, plus per-candidate
+  scoring compute on every selection step. The measurement says the reallocation did not produce
+  competence (E-002 in `docs/05-evidence.md`).
+- **The sensitive parameters** are the competence window, the minimum-sample count that separates
+  "unrated" from "impossible", and the triviality ceiling. No source in the ledger reports a
+  sensitivity analysis for any of them (E-001), and the proof of concept fixed rather than tuned
+  them, so the mechanism's operating band is unknown.
+- **The risk that mattered in practice** was not a seam between components — there are two, and the
+  proof of concept exercises both through one interface — but the assumption underneath the whole
+  question: that practice on an unlearnable goal is wasted. The run found that for a learner which
+  transfers across goals it is not, which is why the second component could not pay for itself in
+  that configuration (E-002, and the condition recorded in `docs/01-theory.md`).
 
-## 2. Architecture
-
-<!-- Components, seams, data flow. A diagram (mermaid is fine) plus the list of mechanisms
-     that carry the drivers. Component names must match .sota/readiness.yaml. -->
-
-```mermaid
-flowchart LR
-  core[core] --> store[(store)]
-  host[host] --> core
-```
-
-| Mechanism | Carries which driver |
-| :--- | :--- |
-| TODO | TODO |
-
-## 3. Approaches considered
-
-| Approach | Chosen | Rejected alternative | Why |
-| :--- | :--- | :--- | :--- |
-| TODO | ✔ | TODO | TODO |
-
-## 4. Utility tree
-
-Authoritative copy: `.sota/quality-gates.yaml`. Summary:
-
-| ID | Characteristic | Priority | Difficulty |
-| :--- | :--- | :--- | :--- |
-| S-001 | TODO | high | high |
-
-## 5. Analysis of high-priority scenarios
-
-| Scenario | Mechanism that responds | Finding | ID |
-| :--- | :--- | :--- | :--- |
-| S-001 | TODO | TODO | SP-001 |
-
-## 6. Adversarial pass
-
-All five attacks are mandatory; attack 5 is the RDD check.
-
-**A1 — Load.** At 10× designed volume, what breaks first and what is the symptom?
-> TODO → R-00? / dismissed because TODO
-
-**A2 — Failure.** Kill the most-depended-on component mid-operation.
-> TODO
-
-**A3 — Change.** The most likely requirement change lands next month; how many components move?
-> TODO
-
-**A4 — Adversary.** An untrusted caller controls every input; which trust boundary is weakest?
-> TODO
-
-**A5 — Substitution.** A competent engineer solves this with the P1 incumbent and no new
-machinery. What exactly do they lose?
-> TODO — if the honest answer is "not much", record it here **and** in the README limitations.
-
-## 7. Sensitivity points
-
-| ID | Decision or parameter | Attribute it moves | Scenario |
-| :--- | :--- | :--- | :--- |
-| SP-001 | TODO | TODO | S-001 |
-
-## 8. Tradeoff points
-
-| ID | Decision | Improves | At the cost of | Chosen because |
-| :--- | :--- | :--- | :--- | :--- |
-| TP-001 | TODO | TODO | TODO | TODO |
-
-## 9. Risks and non-risks
-
-| ID | Statement | Scenario | State | Mitigation / justification |
-| :--- | :--- | :--- | :--- | :--- |
-| R-001 | TODO | S-001 | open | TODO |
-| NR-001 | TODO is safe while TODO holds | — | — | Assumption to re-check when TODO changes |
-
-Every integration scoring IRL < 4 in `.sota/readiness.yaml` must appear here as an `R-###`
-and be referenced by that integration's `risk_ref`.
-
-## 10. Risk themes
-
-| Theme | Risks | Driver endangered | Mitigation roadmap |
-| :--- | :--- | :--- | :--- |
-| TODO | R-001 | TODO | TODO |
+Re-entering at P3 means clearing the waiver `not_applicable: [G3, G4, G5]` in
+`.sota/readiness.yaml` and supplying the artefacts those gates require: an explicit public
+interface, conformance and failure-mode tests, and a green ISO 5055 gate.

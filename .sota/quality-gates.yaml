@@ -95,11 +95,41 @@ iso5055:
 complexity_ledger: []
 
 # Completed at P6. `suitable_for` is derived from the mapping table, never chosen.
-# diffusion:
-#   relative_advantage: {score: partial, justification: "..."}
-#   compatibility:      {score: strong,  justification: "..."}
-#   simplicity:         {score: weak,    justification: "..."}
-#   trialability:       {score: strong,  justification: "..."}
-#   observability:      {score: partial, justification: "..."}
-#   suitable_for: early-adopters
-#   chasm_blockers: [simplicity]
+# Scores are low because the one measurement this repository has found no advantage over the
+# incumbent. That is the finding, not a formatting problem: the instrument asks who could use this
+# today, and the answer is nobody, until a configuration exists where cross-goal transfer does not
+# make the selection question moot.
+diffusion:
+  relative_advantage:
+    score: weak
+    justification: >
+      No evidence of superiority over the incumbent. At a matched budget the critic arm was level
+      with uniform random goal sampling in the distractor-rich condition (+0.0 pp) and behind it
+      in the all-learnable control (-3.3 pp) over 5 seeds (E-002).
+  compatibility:
+    score: partial
+    justification: >
+      The mechanism occupies the goal-selection slot of a goal-conditioned loop, and the two arms
+      in the proof of concept share one learner, one relabelling rule and one exploration floor,
+      so swapping the policy is the whole integration (E-002). It has never been integrated with
+      a real learner or framework, and no IRL was scored because G4 is waived.
+  simplicity:
+    score: weak
+    justification: >
+      Three thresholds (competence window, minimum-sample count, triviality ceiling) have to be
+      chosen before the critic can rate anything, and no source in the ledger reports a
+      sensitivity analysis for any of them (E-001). Documented complexity is not hidden
+      complexity.
+  trialability:
+    score: strong
+    justification: >
+      One command reproduces the whole comparison in about six seconds, both conditions and both
+      arms over 5 seeds, and a re-run writes a byte-identical data file (E-002).
+  observability:
+    score: weak
+    justification: >
+      What is measured is cheap to see (the harness prints the curves and commits the raw data),
+      but there is no benefit to observe: the arm-level difference is indistinguishable from zero
+      or slightly negative at every checkpoint (E-002).
+  suitable_for: none-yet
+  chasm_blockers: [relative_advantage, simplicity, observability]
