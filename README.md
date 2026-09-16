@@ -58,7 +58,7 @@ that assumption needs testing before the second component is paid for (R5).
 
 ### Readiness scorecard
 
-_Generated from `.sota/` — do not hand-edit._
+_Machine-generated from this repository's readiness data — do not hand-edit._
 
 | Measure | Value | Meaning |
 | :--- | :--- | :--- |
