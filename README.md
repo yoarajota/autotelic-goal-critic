@@ -146,7 +146,9 @@ Full ledger: [docs/05-evidence.md](docs/05-evidence.md).
   now enforces the thresholds in `tools/complexity_gate.py` and a test fails if the enforced and
   declared values drift apart.
 
-<!-- Dispositions of these entries: docs/03-log.md L-001. -->
+<!-- The source-identifier failure is log entry L-001; the gate that could not fail is recorded as
+     friction F-003 in .sota/feedback.yaml. Neither belongs in this list until it is promoted to a
+     stated limitation, which is what this section is. -->
 
 ## Documents
 
