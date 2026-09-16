@@ -1,0 +1,45 @@
+# Concept friction notes — appended by the scoring tooling.
+# Review periodically; promote findings into framework/40-limitations.md.
+entries:
+- id: F-001
+  date: '2026-09-16'
+  kind: tool-gap
+  rule: R3
+  project: autotelic-goal-critic
+  summary: 'commands in docs/05-evidence.md are executed with /bin/sh, but nothing in workflows/06-evidence-pass.md
+    or the evidence-entry template says so. A block that begins with ''set -euo pipefail'' — the normal
+    defensive prefix, and bash on the author''s machine — fails the runner with ''/bin/sh: 2: set: Illegal
+    option -o pipefail'' (exit 2) and is reported as a broken evidence entry even though it works when
+    run by hand.'
+  suggestion: 'State the shell in the evidence-entry template next to the fenced-block requirement, or
+    execute fenced blocks with bash when available. A template-level note is enough: the failure is confusing
+    because the same command succeeds interactively.'
+  resolved: false
+- id: F-002
+  date: '2026-09-16'
+  kind: false-positive
+  rule: G1
+  project: autotelic-goal-critic
+  summary: The G1 failure-modes check in gate_checks looks for the literal substring '## Known failure
+    modes' or '## Failure modes', but the heading an agent follows in the shipped theory template is '##
+    3. Known failure modes'. A concept that fills the template exactly as generated fails its own G1 with
+    'docs/01-theory.md has no failure-modes section', and the fix — renaming the heading, which breaks
+    the template's numbering — is not discoverable from the template text.
+  suggestion: Match the heading with a regex that tolerates optional numbering, e.g. re.search(r'^#{1,3}\s*(?:\d+\.\s*)?(?:Known
+    )?[Ff]ailure modes', theory, re.M), and add a test asserting the template the framework ships satisfies
+    the check the framework runs.
+  resolved: false
+- id: F-003
+  date: '2026-09-16'
+  kind: missing-check
+  rule: tooling
+  project: autotelic-goal-critic
+  summary: 'feedback --add derives the next F-### from the file''s current content and then rewrites the
+    whole file, with no lock and no re-read before writing. Two additions invoked in parallel (as an agent
+    running independent tool calls will) both compute F-001 from the same empty state, and the second
+    write clobbers the first: one entry is lost and the file is left with orphaned lines that YAML still
+    parses, so the loss is silent. Triggered here by my own parallel invocation of two --add calls.'
+  suggestion: Re-read and re-validate the file immediately before writing, append rather than rewrite,
+    or take an flock around the read-modify-write; and fail loudly if the on-disk content changed since
+    the read instead of overwriting it.
+  resolved: false
