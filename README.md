@@ -54,16 +54,16 @@ _Generated from `.sota/` — do not hand-edit._
 
 | Measure | Value | Meaning |
 | :--- | :--- | :--- |
-| **TRL** | **2** | Technology concept formulated |
-| **SRL**  | **3** | High-risk immature technologies identified and prototyped — seams only |
-| Composite SRL | 0.222 | aggregate over all components (0–1) |
-| Weakest component | core (0.2222) | lowest component-level SRL |
+| **TRL** | **3** | Critical function proof of concept |
+| **SRL**  | **4** | Performance specifications and constraints defined and allocated — seams only |
+| Composite SRL | 0.333 | aggregate over all components (0–1) |
+| Weakest component | core (0.3333) | lowest component-level SRL |
 | Weakest seam | n/a | lowest-scoring integration pair |
 | Suitable for | not assessed | audience for which this result is ready |
 
 | Component | Role | TRL | Component SRL |
 | :--- | :--- | :-: | :-: |
-| `core` | concept | 2 | 0.222 |
+| `core` | concept | 3 | 0.333 |
 
 | Scenario | Characteristic | Priority | Status |
 | :--- | :--- | :--- | :--- |
