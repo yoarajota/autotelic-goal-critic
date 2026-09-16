@@ -36,17 +36,18 @@ Fetch date: 2026-09-16.
 
 **Kind:** survey
 
-```bash
-# Every URL in the source ledger of docs/01-theory.md must resolve. Exits non-zero if any does not.
-set -euo pipefail
-urls=$(grep -oE 'https?://[^ )>]+' docs/01-theory.md | sort -u | grep -vE 'conventionalcommits|creativecommons')
+```sh
+# Every URL in the source ledger of docs/01-theory.md must resolve.
+# POSIX sh only: the evidence runner executes this block with /bin/sh, which does not
+# accept `set -o pipefail`.
+urls=$(grep -oE 'https?://[^ )>]+' docs/01-theory.md | sort -u)
 fail=0
 for u in $urls; do
   code=$(curl -sSL -I -o /dev/null -w '%{http_code}' --max-time 30 -A 'evidence-check/1.0' "$u" || echo 000)
   printf '%s  %s\n' "$code" "$u"
-  [ "$code" = "200" ] || fail=1
+  if [ "$code" != "200" ]; then fail=1; fi
 done
-echo "checked $(echo "$urls" | wc -l) URL(s)"
+echo "checked $(printf '%s\n' "$urls" | wc -l) URL(s)"
 exit $fail
 ```
 
