@@ -9,12 +9,12 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           # gitleaks scans history, so the checkout cannot be shallow.
           fetch-depth: 0
 
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.1.0
         with:
           # Pinned so the proof of concept's random draws are reproducible in CI as well as
           # locally; the harness is only reproducible against the interpreter it was run on.
