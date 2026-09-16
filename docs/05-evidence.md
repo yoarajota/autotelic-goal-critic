@@ -88,6 +88,84 @@ the pre-registered margin in H-001
 
 ---
 
+### E-002 — Proof of concept: the critic shifts where the budget goes, and that does not buy competence
+
+**Claim.** Establishes the P2 proof-of-concept measurement that bears on H-001, and records a
+**negative signal**: at this scale the mechanism reallocates practice as designed but produces no
+competence advantage over uniform random goal sampling, and the pre-registered margin is not met.
+It also identifies, from its own data, the condition under which the mechanism's premise fails in
+this domain — see the confound below, which the P5 design has to answer.
+
+**Environment:** host (Ubuntu 24.04, x86_64), Python 3.13.13 via uv 0.12.15, standard library
+only (no numpy, no GPU); single-process, sequential; deterministic environment and seeded RNG.
+
+**Kind:** benchmark
+
+**Data:** evidence-data/E-002-poc-runs.json (sha256: 68b06dba9188b3432cfadfe6a4a9fea246db6106f76c367a7bb1d89366908dfb)
+
+```bash
+uv run python poc/run_poc.py --budget 60000 --eval-every 5000 --seeds 0 1 2 3 4 --saturation-budget 200000 --out evidence-data/E-002-poc-runs.json
+```
+
+**Result:** Grid 21x21, horizon 12, start at the centre, 30 held-out reachable goals fixed before
+training and never sampled. Two conditions: `distractor-rich` (all 441 cells: 5 trivial, 292
+reachable, 144 impossible because farther than the horizon, leaving 262 reachable-with-practice
+goals in the training pool of 411 once the held-out set is removed, so 63.7% of that pool is worth
+practising) and `all-learnable` (262 training goals, all worth practising). Two arms
+identical except for goal selection, 5 pinned seeds, 20 runs, matched budget of 60k environment
+transitions per run, evaluation every 5k.
+
+| Condition | Arm | Final held-out success (median, min, max) | Episodes on practice regions |
+| :--- | :--- | :--- | :--- |
+| distractor-rich | uniform | 96.7% (93.3%, 100.0%) | 63.9% |
+| distractor-rich | critic | 96.7% (93.3%, 100.0%) | 71.0% |
+| all-learnable | uniform | 96.7% (93.3%, 100.0%) | 100% |
+| all-learnable | critic | 93.3% (90.0%, 100.0%) | 100% |
+
+- **The critic arm reallocates practice as specified and the reallocation is visible:** in the
+distractor-rich condition it spends 71.0% of episodes on regions where progress is possible,
+against 63.9% for uniform sampling and 63.7% for a pool sampled uniformly (the wasted remainder
+is trivial or unreachable goals).
+- **The margin is not met.** Distractor-rich margin at the matched budget: **+0.0 pp** (predicted:
+>= 20 pp). All-learnable margin: **-3.3 pp** (predicted: smaller or absent). The two readings
+that were not pre-registered agree: transitions to reach the baseline's final competence in the
+distractor-rich condition were 30,000 (critic) against 20,000 (uniform), and transitions to 90%
+held-out success in the all-learnable condition were 25,000 (critic) against 15,000 (uniform).
+Both conditions are ceiling-bound near 97%, so the primary margin had little headroom to show
+itself at this budget — but the critic is not ahead on any reading, at any checkpoint, in either
+condition.
+- **A confound the run itself exposes.** The distractor-rich *uniform* arm, which spends about a
+third of its episodes on trivial or unreachable goals, reaches its plateau earlier than the
+all-learnable uniform arm at equal budget (96.7% against 86.7% at 20k transitions). Adding
+unreachable goals to the goal set did not slow the baseline down; on these curves it appears to
+have helped it. The value function is indexed by goal-relative offset, so an episode aimed at an
+unreachable goal still trains the offset values that the reachable far goals need. If that reading
+holds, the premise this concept rests on — that uniform sampling wastes budget on unlearnable
+goals — is false for a learner that transfers across goals, and the mechanism has nothing to buy.
+This is the single most important open question the PoC produced, and it is listed as such in
+`docs/01-theory.md`; separating it from the mechanism's own effect is P5 work.
+- **The critical function itself runs.** One command, exit 0, 20 runs, zero aborted runs, and a
+re-run writes a byte-identical data file (same sha256), so the harness is deterministic. The
+critic's fallback kept runs alive when every candidate was rejected, which is the behaviour S-002
+requires and which `tests/test_goal_selection.py` will have to pin at P3.
+- **Prediction compared with observation.** Predicted (P1, from the reported partial effect in the
+IMGEP ablation and the no-distractor result): the critic ahead by >= 20 pp with distractors,
+advantage smaller or absent without them. Observed: no advantage in either condition, and what
+difference exists below the ceiling is negative in the control. The second half of the prediction
+is consistent with the observation; the first half is contradicted.
+- **Not a decisive test of H-001.** This is a P2 surrogate: one gridworld, an enumerable goal
+space, a tabular learner with free cross-goal transfer, one budget range, no baseline tuning, and
+a region parameterisation (distance rings) that is the only natural one here. It bounds what this
+configuration shows, not what the mechanism is worth in the settings the sources used. What would
+make it decisive is P5 as pre-registered.
+
+**Status:** reproducing
+**Supports:** H-001 (negative signal at proof-of-concept scale), `core` at TRL 3 (runnable
+artefact, one command, exit 0, observed result compared with the analytical prediction)
+**Recorded:** 2026-09-16
+
+---
+
 ## Benchmark methodology
 
 Pre-registered at P1; applies to every entry with `Kind: benchmark`. The numbers below are

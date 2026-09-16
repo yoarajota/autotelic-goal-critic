@@ -63,3 +63,34 @@ E-001 so the check is repeatable rather than remembered.
 
 **Disposition:** promoted: E-001
 
+### L-002 — 2026-09-16 — The proof of concept produced a null, and the reason is in its own data
+
+**Context:** building the P2 proof of concept for the selection mechanism — a 21x21 gridworld with
+a horizon of 12, a goal space mixing 5 trivial, 292 reachable and 144 unreachable goals, a tabular
+learner indexed by goal-relative offset with hindsight relabelling, and two arms differing only in
+goal selection. The prediction from P1 was that the critic would be ahead by the pre-registered
+20 percentage points with distractors present and level without them.
+
+**Found:** no competence advantage in either condition (distractor-rich margin +0.0 pp, all-learnable
+-3.3 pp over 5 seeds, E-002), and the critic arm slower on both time-to-competence readings. The
+mechanism
+itself worked: it moved 71.0% of episodes onto regions where progress was possible, against 63.9%
+for uniform sampling. The reason the movement bought nothing is visible in the same run — the
+*distractor-rich uniform* arm, which spends about a third of its episodes on trivial or unreachable
+goals, reached its plateau earlier than the all-learnable uniform arm at equal budget (96.7% against
+86.7% at 20k transitions). The learner's value function is indexed by goal minus position, so an
+episode aimed at an unreachable goal still trains the offset values a reachable far goal needs. The
+waste the mechanism exists to remove was not there, because practice transfers across goals. That
+is a property of the instrument as much as of the mechanism: a learner with bounded transfer, which
+is what the source settings have, would show a different number, and separating the two readings is
+P5 work rather than something this PoC can settle.
+
+The other thing worth recording is a reporting bug found before anything was written up: the first
+version of the summary compared the critic's transitions-to-competence against *the end of the run*
+rather than against the baseline's own transitions-to-the-same-competence, which turned a 1.5x
+slowdown into an apparent 2x speedup. It was caught by reading the baseline's own curve instead of
+the summary line. Any single number that flatters the mechanism in this repository should be read
+against the curve it came from.
+
+**Disposition:** promoted: E-002
+

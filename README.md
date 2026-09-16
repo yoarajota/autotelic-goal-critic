@@ -23,10 +23,15 @@ reachable goals at least 20 percentage points higher than uniform random goal sa
 budget; at the cost of the critic's competence estimation, which needs recorded outcome samples
 before any goal can be rated, adds a minimum-sample threshold below which a goal is unrated rather
 than rejected, and adds per-candidate scoring compute to every selection step.
-→ *verdict: untested* — the experiment has no runnable form yet, so the claim is stated and not
-yet measured. It is falsifiable as written: an advantage of zero or less at a matched budget
-falsifies it, and an advantage between zero and the margin counts as partial support, not a win.
-The margin was fixed before any code exists (E-001).
+→ *verdict: untested* — the pre-registered comparison has not run. A proof-of-concept surrogate has,
+and **it does not support the claim**: over 5 pinned seeds at a matched 60k-transition budget, the
+critic arm ended level with uniform sampling in the distractor-rich condition (+0.0 pp) and behind
+it in the all-learnable control (-3.3 pp), and it was slower on both time-to-competence readings
+(E-002). The margin was fixed before any code exists (E-001). The proof of concept is a throwaway
+instrument — one small domain, an untuned baseline — so it bounds what that configuration shows
+rather than deciding the hypothesis; but it is a negative signal, and it identified the condition
+that P5 has to answer: a learner that transfers freely across goals makes practice on any goal
+partly useful for every goal, which removes the waste the mechanism exists to remove (E-002).
 
 ## Baseline
 
@@ -37,9 +42,9 @@ draws them from the critic, and nothing else differs. It is not a strawman — h
 is already an automatic curriculum, and the published random-selection condition is reported as
 competitive wherever the goal space contains no distractors (E-001).
 
-Reproduce the comparison: not yet available. The head-to-head run lands with the proof of concept;
-until it exists, this repository contains a hypothesis and the source survey that shaped it, and no
-measurement of the concept. See [E-001](docs/05-evidence.md#e-001) for what *is* established.
+Reproduce the comparison: `uv run python poc/run_poc.py --budget 60000 --eval-every 5000 --seeds 0 1 2 3 4`,
+which writes the raw curve data behind [E-002](docs/05-evidence.md#e-002) — a proof of concept, not the
+pre-registered benchmark, which lands at P5 and is the only run that can decide H-001.
 
 <!-- scorecard:start -->
 
@@ -78,11 +83,12 @@ make setup
 make quality
 make test
 
-# the headline result in one command — lands with the proof of concept
+# the proof of concept: both arms, both conditions, 5 seeds, one command (~6 s)
+make poc
 ```
 
-No result command exists yet. What can be run today is the source ledger check recorded as E-001,
-which verifies that every URL cited in `docs/01-theory.md` resolves.
+`make poc` prints the held-out success curves and writes `evidence-data/E-002-poc-runs.json`.
+A re-run produces a byte-identical file, so the harness is deterministic.
 
 ## How it works
 
@@ -102,15 +108,23 @@ mechanism requires and the eight failure modes that become tests, and
 | ID | Claim | Command | Result |
 | :--- | :--- | :--- | :--- |
 | E-001 | The mechanism, its operating conditions, its failure modes, the incumbent and every published number quoted in this repository come from 12 primary sources, all read and all resolved | `docs/05-evidence.md → E-001` | 12 sources at `Access: full-text`, all 12 URLs HTTP 200; three recalled identifiers that resolved to unrelated papers were discarded before use |
+| E-002 | The proof of concept runs the critical function end to end, and the mechanism does not buy competence in it | `make poc` | 20 runs, 5 seeds per arm, both conditions; critic margin +0.0 pp (distractor-rich) and -3.3 pp (all-learnable); byte-identical data on re-run |
 
 Full ledger: [docs/05-evidence.md](docs/05-evidence.md).
 
 ## Limitations
 
-- **Nothing about the concept has been measured.** The readiness scorecard below reports a
-  literature-level claim only. Every comparative statement in this repository comes from the
-  published sources, in their environments, at budgets three to four orders of magnitude larger
-  than a tabular gridworld's — none of it is this repository's result.
+- **No measurement supports the concept.** The one experiment in this repository fails to support
+  it: at a matched budget the critic arm was level with uniform sampling where the mechanism should
+  have its advantage and behind it in the control, over 5 seeds (E-002). Every other comparative
+  statement here comes from the published sources, in their environments, at budgets three to four
+  orders of magnitude larger than this gridworld's — none of it is this repository's result.
+- **The mechanism's premise failed in the configuration that was measured.** Uniform sampling is
+  supposed to waste budget on goals that cannot be learned. In the proof of concept it did not: the
+  arm spending a third of its episodes on trivial or unreachable goals reached its plateau at least
+  as early as the arm practising only learnable goals, because the learner shares value estimates
+  across goals and therefore learns something useful from any episode (E-002). If that reading holds
+  in the settings the sources used, the second component is unpaid complexity there too (R5).
 - **The published evidence for the mechanism is mixed, and the incumbent is strong.** In the
   ablation that comes closest to this question, progress-based selection is reported ahead of
   random selection on one goal space and not on another, and a hand-written fixed curriculum is

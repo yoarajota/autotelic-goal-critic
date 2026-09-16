@@ -2,7 +2,7 @@ id: C-006
 slug: autotelic-goal-critic
 title: "Autotelic goal generation: generator + independent Goldilocks critic"
 archetype: implementation
-phase: P1
+phase: P2
 status: active
 
 # The stack is declared explicitly so gate commands and verification paths are concrete
@@ -100,7 +100,7 @@ hypotheses:
       which a goal is unrated rather than rejected, and adds per-candidate scoring compute to every
       selection step.
     verdict: untested
-    evidence_refs: []
+    evidence_refs: [E-002]
     revisions: []
 
 # Set once the remote exists (bootstrap step 3). Required only at G6, so it stays

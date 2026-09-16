@@ -101,6 +101,15 @@ in § Hypothesis manipulates condition 1 directly.
    experiment must contain trivial and unreachable goals for the mechanism to have a chance of
    showing an effect at all.
 
+   **Refined by measurement (E-002).** The condition above is necessary but not sufficient: the
+algorithmic premise — that uniform sampling *wastes* budget on unlearnable goals — also requires
+that practice be goal-specific. In the proof of concept the distractor-rich uniform arm, which
+spent roughly a third of its episodes on trivial or unreachable goals, reached its plateau at
+least as early as the arm practising only reachable goals at the same budget (E-002). An episode
+aimed at an unreachable goal still trains the offset values a reachable far goal needs, so
+nothing was wasted. Where a learner transfers freely across goals, the waste the mechanism exists
+to remove is not there to remove — which is the sharpest bound this repository has on the claim.
+
 2. **Achievement must be judged outside the learner.** The critic's signal is the environment's
    verdict. If the rating is derived from the same estimates the learner is improving, the
    measurement is self-confirming and the mechanism degenerates into optimism.
@@ -286,6 +295,14 @@ there and only there.
    goal unreachable; the criterion "yes, impossible" is not decidable from finite samples (E-001),
    so any implementation chooses a sample count. This repository's choice is a design decision, not
    a derived result.
+8. **How much does goal selection matter when the learner transfers across goals?** The proof of
+   concept says: less than the concept assumed. Its distractor-rich uniform arm was not slowed by
+   spending a third of its episodes on unreachable goals (E-002), which is consistent with transfer
+   making practice on any goal partly useful for every goal. The P5 design has to separate two
+   readings that the PoC cannot: the mechanism genuinely buys nothing in small enumerable domains,
+   or it buys nothing *for this learner*. A learner with bounded cross-goal transfer — limited
+   capacity, or a goal representation the agent must acquire, as the sources' settings have — is
+   the configuration in which this question is still open.
 
 ## Sources
 
