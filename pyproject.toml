@@ -30,6 +30,10 @@ ignore = ["TRY003"]
 [tool.ruff.lint.per-file-ignores]
 # assert is the pytest idiom: it is the pass/fail signal, not error handling.
 "tests/*.py" = ["S101"]
+# The proof of concept is a seeded simulation: its randomness must be reproducible, and S311's
+# concern (predictability) is the property being relied on, not a weakness. The real
+# implementation in src/ does not get this exemption.
+"poc/*.py" = ["S311"]
 
 [tool.mypy]
 strict = true
