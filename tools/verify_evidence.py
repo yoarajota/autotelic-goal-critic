@@ -173,8 +173,13 @@ def parse_ledger(text: str) -> list[Entry]:
 
 
 def run(command: str, timeout: int) -> tuple[str, str, int]:
-    done = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=timeout,
-                          executable="/bin/bash")
+    """Run one ledger command under bash, which is what the ledger's blocks are written for.
+
+    Executing that command is this tool's whole purpose, and the command comes from the
+    repository's own evidence ledger rather than from a caller.  # noqa: S603
+    """
+    done = subprocess.run(["/bin/bash", "-lc", command],  # noqa: S603
+                          capture_output=True, text=True, timeout=timeout)
     return done.stdout or "", done.stderr or "", done.returncode
 
 
@@ -375,7 +380,8 @@ def check_computed_from(check: Check, root: Path) -> tuple[bool, str]:
     return True, ""
 
 
-def check_repeat_identical(check: Check, entry: Entry, root: Path, timeout: int) -> tuple[bool, str]:
+def check_repeat_identical(check: Check, entry: Entry, root: Path,
+                           timeout: int) -> tuple[bool, str]:
     runs = int(check.options.get("runs", "2"))
     paths = [Path(arg) for arg in check.args]
     if not paths:
@@ -390,7 +396,7 @@ def check_repeat_identical(check: Check, entry: Entry, root: Path, timeout: int)
     first = digests[0]
     for index, other in enumerate(digests[1:], start=2):
         if other != first:
-            changed = [str(path) for path, a, b in zip(paths, first, other) if a != b]
+            changed = [str(path) for path, a, b in zip(paths, first, other, strict=True) if a != b]
             return False, f"run {index} differs on {', '.join(changed)}"
     return True, ""
 
@@ -411,7 +417,8 @@ def write_record(root: Path, outcomes: list[Outcome], tool_version: str) -> dict
         },
     }
     (root / RECORD).parent.mkdir(parents=True, exist_ok=True)
-    (root / RECORD).write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (root / RECORD).write_text(json.dumps(record, indent=2, sort_keys=True) + "\n",
+                               encoding="utf-8")
     return record
 
 
