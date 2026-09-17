@@ -1,4 +1,4 @@
-.PHONY: setup teardown quality test poc
+.PHONY: setup teardown quality test poc verify
 
 setup:
 	uv sync
@@ -21,6 +21,10 @@ quality:
 
 test:
 	uv run pytest
+
+# Executes every evidence entry's declared checks and refreshes docs/verification.md.
+verify:
+	uv run python tools/verify_evidence.py
 
 # The proof of concept. Writes the raw curve data behind E-002.
 poc:

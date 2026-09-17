@@ -81,6 +81,9 @@ Numbers read out of the sources, with the conditions the source reports them und
 | Tabular baseline on bit-flipping | fails for n > 40, hindsight relabelling solves it | HER's motivating experiment |
 | Learning progress from Bellman errors | reported as failing to improve over random goal selection | Second-hand report; primary not read |
 
+**Verifies:** exit-zero
+**Verifies:** output-contains "checked 12 URL(s)"
+
 **Status:** reproducing
 **Supports:** H-001, `core` at TRL 2 (mechanism specified, application specified, baseline named),
 the pre-registered margin in H-001
@@ -158,6 +161,14 @@ space, a tabular learner with free cross-goal transfer, one budget range, no bas
 a region parameterisation (distance rings) that is the only natural one here. It bounds what this
 configuration shows, not what the mechanism is worth in the settings the sources used. What would
 make it decisive is P5 as pre-registered.
+
+**Verifies:** data-sha256
+**Verifies:** computed-from evidence-data/E-002-poc-runs.json path=summary.distractor-rich.median_final.critic value=0.9667 tolerance=0.0001
+**Verifies:** computed-from evidence-data/E-002-poc-runs.json path=summary.distractor-rich.median_final.uniform value=0.9667 tolerance=0.0001
+**Verifies:** computed-from evidence-data/E-002-poc-runs.json path=summary.all-learnable.median_final.critic value=0.9333 tolerance=0.0001
+**Verifies:** computed-from evidence-data/E-002-poc-runs.json path=summary.distractor-rich.episode_share_reachable_regions.critic value=0.7096 tolerance=0.0001
+**Verifies:** repeat-identical --runs 2 evidence-data/E-002-poc-runs.json
+**Verifies:** output-contains "critic margin at matched budget:  +0.0 pp"
 
 **Status:** reproducing
 **Supports:** H-001 (negative signal at proof-of-concept scale), `core` at TRL 3 (runnable

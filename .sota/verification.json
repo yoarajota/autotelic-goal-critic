@@ -1,0 +1,27 @@
+{
+  "entries": {
+    "E-001": {
+      "checks": [
+        "exit-zero",
+        "output-contains"
+      ],
+      "date": "2026-09-16",
+      "outcome": "pass"
+    },
+    "E-002": {
+      "checks": [
+        "data-sha256",
+        "computed-from",
+        "computed-from",
+        "computed-from",
+        "computed-from",
+        "repeat-identical",
+        "output-contains"
+      ],
+      "date": "2026-09-16",
+      "outcome": "pass"
+    }
+  },
+  "generated": "2026-09-16",
+  "tool": "verify_evidence.py"
+}

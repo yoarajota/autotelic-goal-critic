@@ -30,6 +30,9 @@ jobs:
       - run: make quality
       - run: make test
 
+      - name: re-run every evidence entry's declared checks
+        run: make verify
+
       - name: the proof of concept reproduces the committed data byte for byte
         run: |
           make poc
